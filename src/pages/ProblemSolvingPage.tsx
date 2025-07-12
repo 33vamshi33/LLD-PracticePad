@@ -125,6 +125,15 @@ const ProblemSolvingPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [levelFilter, setLevelFilter] = useState<string>('All');
   const [timeFilter, setTimeFilter] = useState<string>('All');
+  const [loadedDiagramData, setLoadedDiagramData] = useState<any>(null);
+  const [loadedFeedback, setLoadedFeedback] = useState<string | null>(null);
+
+  const handleTabChange = (tab: 'problem' | 'submissions') => {
+    setActiveTab(tab);
+    if (tab === 'submissions') {
+      fetchSubmissions();
+    }
+  };
 
   useEffect(() => {
     if (id) {
@@ -266,11 +275,10 @@ const ProblemSolvingPage: React.FC = () => {
     }
   };
 
-  const handleTabChange = (tab: 'problem' | 'submissions') => {
-    setActiveTab(tab);
-    if (tab === 'submissions') {
-      fetchSubmissions();
-    }
+  const handleLoadSubmission = (submission: any) => {
+    setLoadedDiagramData(submission.diagram_json);
+    setLoadedFeedback(typeof submission.feedback === 'string' ? submission.feedback : JSON.stringify(submission.feedback, null, 2));
+    setActiveTab('problem'); // Switch to problem tab to show the loaded diagram
   };
 
   const filteredSubmissions = useMemo(() => {
@@ -533,7 +541,7 @@ const ProblemSolvingPage: React.FC = () => {
               )}
             </div>
             <div className="h-[600px] border border-gray-200 rounded-lg overflow-hidden">
-              <DiagramEditor onSubmit={handleSubmit} />
+              <DiagramEditor onSubmit={handleSubmit} initialData={loadedDiagramData} />
             </div>
           </div>
 
@@ -565,6 +573,16 @@ const ProblemSolvingPage: React.FC = () => {
                   </button>
                 </div>
               )}
+            </div>
+          )}
+
+          {loadedFeedback && (
+            <div className="card p-6 mt-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Loaded Submission Feedback</h3>
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-medium text-gray-900 mb-2">Feedback:</h4>
+                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{loadedFeedback}</p>
+              </div>
             </div>
           )}
         </>
@@ -696,6 +714,14 @@ const ProblemSolvingPage: React.FC = () => {
                         : JSON.stringify(submission.feedback, null, 2)
                       }
                     </p>
+                  </div>
+                  <div className="mt-4 flex justify-end">
+                    <button
+                      onClick={() => handleLoadSubmission(submission)}
+                      className="btn-secondary"
+                    >
+                      Load Submission
+                    </button>
                   </div>
                 </div>
               ))}

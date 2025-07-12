@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Excalidraw } from '@excalidraw/excalidraw';
 import type { ExcalidrawImperativeAPI } from '@excalidraw/excalidraw/types';
 
@@ -6,10 +6,17 @@ type ExcalidrawElement = ReturnType<ExcalidrawImperativeAPI['getSceneElements']>
 
 interface DiagramEditorProps {
   onSubmit: (diagram_json: any) => void;
+  initialData?: any; // New prop for loading previous submissions
 }
 
-const DiagramEditor: React.FC<DiagramEditorProps> = ({ onSubmit }) => {
+const DiagramEditor: React.FC<DiagramEditorProps> = ({ onSubmit, initialData }) => {
   const [excalidrawAPI, setExcalidrawAPI] = useState<ExcalidrawImperativeAPI | null>(null);
+
+  useEffect(() => {
+    if (excalidrawAPI && initialData) {
+      excalidrawAPI.updateScene({ elements: initialData });
+    }
+  }, [excalidrawAPI, initialData]);
 
   const handleSubmit = () => {
     if (excalidrawAPI) {
@@ -61,6 +68,7 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({ onSubmit }) => {
         <Excalidraw
           excalidrawAPI={(api) => setExcalidrawAPI(api)}
           theme="light"
+          initialData={initialData ? { elements: initialData } : null}
           UIOptions={{
             canvasActions: {
               saveToActiveFile: false,
