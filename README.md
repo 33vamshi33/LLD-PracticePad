@@ -1,5 +1,3 @@
-### **Instructions for the LLM Agent to Create a Low-Level Design Practice Application**
-
 **Project Title:** LLD-PracticePad
 
 **1. Project Overview**
@@ -134,10 +132,3 @@ Here is a basic schema to start with:
 8.  The user's points and profile are updated.
 
 By following these instructions, you should be able to generate a functional and innovative platform that effectively gamifies the process of learning Low-Level Design.
-
-Integrate with my supabase for free postgres DB and make application fully workable
-
-SUPABASE details
-Postgres Password: LLD-PracticePad
-VITE_SUPABASE_URL: https://gcxurhapvkrbboeepehx.supabase.co
-VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjeHVyaGFwdmtyYmJvZWVwZWh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzMTU3NjUsImV4cCI6MjA2Nzg5MTc2NX0.uqpRytVzVM9FLMTDFkT2nDhuEf-sSnrOlCZXf4h9Oec
