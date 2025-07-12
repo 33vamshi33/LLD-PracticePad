@@ -121,6 +121,7 @@ const ProblemSolvingPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'problem' | 'submissions'>('problem');
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);
+  const [submissionCount, setSubmissionCount] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [levelFilter, setLevelFilter] = useState<string>('All');
   const [timeFilter, setTimeFilter] = useState<string>('All');
@@ -168,6 +169,31 @@ const ProblemSolvingPage: React.FC = () => {
     }
   }, [id]);
 
+  useEffect(() => {
+    const fetchSubmissionCount = async () => {
+      if (!user || !levels.length) return;
+
+      try {
+        const levelIds = levels.map(level => level.id);
+        const { count, error } = await supabase
+          .from('submissions')
+          .select('id', { count: 'exact' })
+          .eq('user_id', user.id)
+          .in('level_id', levelIds);
+
+        if (error) {
+          console.error('Error fetching submission count:', error);
+        } else {
+          setSubmissionCount(count || 0);
+        }
+      } catch (err) {
+        console.error('Unexpected error fetching submission count:', err);
+      }
+    };
+
+    fetchSubmissionCount();
+  }, [user, levels]);
+
   const handleLevelClick = (levelIndex: number) => {
     if (levelIndex === currentLevelIndex) return;
 
@@ -193,15 +219,33 @@ const ProblemSolvingPage: React.FC = () => {
   };
 
   const fetchSubmissions = async () => {
-    if (!user || !currentLevel) return;
-    
+    if (!user || !id) return;
+
     setLoadingSubmissions(true);
     try {
+      // First, get all level IDs for the current problem
+      const { data: problemLevelsData, error: problemLevelsError } = await supabase
+        .from('problem_levels')
+        .select('id')
+        .eq('problem_id', id);
+
+      if (problemLevelsError) throw problemLevelsError;
+
+      const levelIds = problemLevelsData.map(level => level.id);
+
+      if (levelIds.length === 0) {
+        setSubmissions([]);
+        setLoadingSubmissions(false);
+        return;
+      }
+
+      // Then, fetch submissions filtered by these level IDs
       const { data, error } = await supabase
         .from('submissions')
         .select(`
           *,
           problem_levels (
+            id,
             level_number,
             level_description,
             problems (
@@ -210,7 +254,7 @@ const ProblemSolvingPage: React.FC = () => {
           )
         `)
         .eq('user_id', user.id)
-        .eq('level_id', currentLevel.id)
+        .in('level_id', levelIds) // Filter by level_id using the fetched IDs
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -326,7 +370,7 @@ const ProblemSolvingPage: React.FC = () => {
       
       setSubmissionResult({ score: cleanScore, feedback: cleanFeedback });
 
-      await supabase.from('submissions').insert([
+      const { error: submissionError } = await supabase.from('submissions').insert([
         {
           user_id: user.id,
           level_id: currentLevel.id,
@@ -335,6 +379,12 @@ const ProblemSolvingPage: React.FC = () => {
           feedback: cleanFeedback,
         },
       ]);
+
+      if (submissionError) {
+        throw submissionError;
+      }
+
+      setSubmissionCount(prevCount => prevCount + 1); // Increment submission count
     } catch (err) {
       console.error('Error submitting:', err);
       setErrorMessage('Failed to submit your design. Please try again.');
@@ -413,7 +463,7 @@ const ProblemSolvingPage: React.FC = () => {
                   : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border-b-2 border-transparent'
               }`}
             >
-              Submissions ({submissions.length})
+              Submissions ({submissionCount})
             </button>
           </div>
         </div>
