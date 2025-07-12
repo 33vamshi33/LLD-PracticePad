@@ -101,6 +101,8 @@ const ErrorDialog: React.FC<ErrorDialogProps> = ({
   );
 };
 
+const SUPABASE_ANON_KEY = (import.meta as any).env.VITE_SUPABASE_ANON_KEY;
+
 const ProblemSolvingPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
@@ -286,7 +288,7 @@ const ProblemSolvingPage: React.FC = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${(import.meta as any).env.VITE_SUPABASE_ANON_KEY}`,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
         },
         body: JSON.stringify({
           evaluation_context: evaluationContext,
