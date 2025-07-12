@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { Link } from 'react-router-dom';
 
@@ -42,12 +42,29 @@ const ProblemListPage: React.FC = () => {
   }, []);
 
   const filteredProblems = useMemo(() => {
+    if (!searchTerm && difficultyFilter === 'All') {
+      return problems;
+    }
+    
     return problems.filter(problem => {
-      const matchesSearch = problem.title.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = searchTerm === '' || 
+        problem.title.toLowerCase().includes(searchTerm.toLowerCase().trim());
       const matchesDifficulty = difficultyFilter === 'All' || problem.difficulty === difficultyFilter;
       return matchesSearch && matchesDifficulty;
     });
   }, [problems, searchTerm, difficultyFilter]);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  }, []);
+
+  const handleDifficultyChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setDifficultyFilter(e.target.value);
+  }, []);
+
+  const clearSearch = useCallback(() => {
+    setSearchTerm('');
+  }, []);
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -87,9 +104,9 @@ const ProblemListPage: React.FC = () => {
 
       {/* Search and Filter Section */}
       <div className="search-section">
-        <div className="flex gap-6 items-center">
-          {/* Search Bar - Proper flex behavior */}
-          <div className="search-container flex-1 min-w-0">
+        <div className="flex flex-col lg:flex-row gap-4 items-stretch">
+          {/* Search Bar - Fixed positioning */}
+          <div className="search-container flex-1">
             <div className="search-icon">
               <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -97,19 +114,32 @@ const ProblemListPage: React.FC = () => {
             </div>
             <input
               type="text"
-              placeholder="Search problems..."
+              placeholder="Search problems by title..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={handleSearchChange}
               className="search-input"
+              aria-label="Search problems"
             />
+            {searchTerm && (
+              <button
+                onClick={clearSearch}
+                className="absolute inset-y-0 right-0 pr-4 flex items-center"
+                aria-label="Clear search"
+              >
+                <svg className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
           </div>
 
-          {/* Difficulty Filter - Proper spacing */}
-          <div className="w-48 flex-shrink-0">
+          {/* Difficulty Filter - Fixed positioning */}
+          <div className="filter-container w-full lg:w-48">
             <select
               value={difficultyFilter}
-              onChange={(e) => setDifficultyFilter(e.target.value)}
-              className="input-field w-full"
+              onChange={handleDifficultyChange}
+              className="filter-select"
+              aria-label="Filter by difficulty"
             >
               <option value="All">All Difficulties</option>
               <option value="Easy">Easy</option>
@@ -119,10 +149,25 @@ const ProblemListPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Results Count */}
+        {/* Results Count - Fixed positioning */}
         <div className="search-results">
-          <p className="text-sm text-gray-600">
-            Showing {filteredProblems.length} of {problems.length} problems
+          <p>
+            {searchTerm || difficultyFilter !== 'All' ? (
+              <>
+                Showing {filteredProblems.length} of {problems.length} problems
+                {(searchTerm || difficultyFilter !== 'All') && (
+                  <span className="ml-2">
+                    • <button 
+                      onClick={() => { setSearchTerm(''); setDifficultyFilter('All'); }}
+                    >
+                      Clear filters
+                    </button>
+                  </span>
+                )}
+              </>
+            ) : (
+              `Showing all ${problems.length} problems`
+            )}
           </p>
         </div>
       </div>
@@ -173,6 +218,14 @@ const ProblemListPage: React.FC = () => {
               : 'Check back later for new problems!'
             }
           </p>
+          {(searchTerm || difficultyFilter !== 'All') && (
+            <button
+              onClick={() => { setSearchTerm(''); setDifficultyFilter('All'); }}
+              className="mt-4 btn-primary"
+            >
+              Clear all filters
+            </button>
+          )}
         </div>
       )}
     </div>

@@ -71,7 +71,7 @@ body {
 
 /* Modern input styles */
 .input-field {
-  @apply bg-white border border-gray-300 text-gray-900 placeholder-gray-500 rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 resize-none;
+  @apply bg-white border border-gray-300 text-gray-900 placeholder-gray-500 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 resize-none;
 }
 
 .input-field:focus {
@@ -123,85 +123,136 @@ body {
   @apply focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2;
 }
 
-/* Search bar specific styles */
+/* Modern Search and Filter Section */
+.search-section {
+  @apply bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6;
+}
+
+.search-section .flex {
+  @apply gap-4;
+}
+
+/* Unified Search Container */
 .search-container {
-  @apply relative;
+  @apply relative flex-1;
 }
 
 .search-icon {
-  @apply absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10;
+  @apply absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10;
 }
 
 .search-input {
-  @apply bg-white border border-gray-300 text-gray-900 placeholder-gray-500 rounded-lg py-2.5 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 resize-none w-full pl-10 pr-4 text-base;
+  @apply bg-white border border-gray-300 text-gray-900 placeholder-gray-500 rounded-lg py-3 pl-12 pr-12 text-base w-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200;
+}
+
+.search-input:focus {
+  @apply border-purple-500 ring-2 ring-purple-500 ring-opacity-20;
 }
 
 .search-icon svg {
   @apply h-5 w-5 text-gray-400;
 }
 
-/* Search section styles */
-.search-section {
-  @apply card p-4 mb-4;
+/* Clear button styles */
+.search-container button {
+  @apply absolute inset-y-0 right-0 pr-4 flex items-center transition-colors duration-200;
 }
 
-.search-section .flex {
-  @apply gap-6 items-center;
+.search-container button:hover svg {
+  @apply text-gray-600;
 }
 
-.search-container.flex-1 {
-  @apply min-w-0;
+/* Unified Filter Styles */
+.filter-container {
+  @apply relative;
 }
 
+.filter-select {
+  @apply bg-white border border-gray-300 text-gray-900 rounded-lg py-3 px-4 text-base w-full focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 appearance-none;
+}
+
+.filter-select:focus {
+  @apply border-purple-500 ring-2 ring-purple-500 ring-opacity-20;
+}
+
+/* Custom dropdown arrow */
+.filter-container::after {
+  content: '';
+  @apply absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-size: 1.5em 1.5em;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* Search results section */
 .search-results {
-  @apply mt-3 pt-3 border-t border-gray-200;
+  @apply mt-4 pt-4 border-t border-gray-200;
 }
 
-.search-section select {
-  @apply py-2.5 text-base;
+.search-results p {
+  @apply text-sm text-gray-600;
 }
 
-/* Responsive behavior */
+.search-results button {
+  @apply text-purple-600 hover:text-purple-700 underline transition-colors duration-200;
+}
+
+/* Responsive behavior for search */
 @media (max-width: 1024px) {
   .search-section .flex {
-    @apply flex-col gap-4 items-stretch;
+    @apply flex-col gap-4;
   }
   
-  .search-container.flex-1 {
-    @apply flex-none w-full;
+  .search-container {
+    @apply w-full;
   }
   
-  .search-section .w-32,
-  .search-section .w-36,
-  .search-section .w-48 {
+  .filter-container {
     @apply w-full;
   }
 }
 
 @media (max-width: 768px) {
   .search-section {
-    @apply p-3;
+    @apply p-4;
   }
   
-  .search-input {
-    @apply py-2.5 text-base;
-  }
-  
-  .search-section select {
-    @apply py-2.5 text-base;
+  .search-input,
+  .filter-select {
+    @apply py-3 text-base;
   }
   
   .search-section .flex {
     @apply flex-col gap-3;
   }
   
-  .search-container.flex-1 {
-    @apply flex-none w-full;
-  }
-  
-  .search-section .w-32,
-  .search-section .w-36,
-  .search-section .w-48 {
+  .search-container,
+  .filter-container {
     @apply w-full;
   }
+  
+  .search-results {
+    @apply mt-3 pt-3;
+  }
+}
+
+/* Focus and hover states for better accessibility */
+.search-input:focus + .search-icon svg {
+  @apply text-purple-500;
+}
+
+.search-container:focus-within .search-icon svg {
+  @apply text-purple-500;
+}
+
+/* Hover effects for better interactivity */
+.search-input:hover {
+  @apply border-gray-400;
+}
+
+.filter-select:hover {
+  @apply border-gray-400;
 }
