@@ -11,17 +11,12 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom'],
-          excalidraw: ['@excalidraw/excalidraw']
+          vendor: ['react', 'react-dom']
         }
       }
-    },
-    commonjsOptions: {
-      include: [/node_modules/]
     }
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', '@supabase/supabase-js'],
-    exclude: ['@excalidraw/excalidraw']
+    include: ['react', 'react-dom', '@supabase/supabase-js']
   }
 })
