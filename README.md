@@ -130,5 +130,3 @@ Here is a basic schema to start with:
 6.  The backend AI Judge evaluates the submission and returns a score and feedback.
 7.  If the score is above a certain threshold (e.g., 75%), the user solves the level and can proceed to the next one.
 8.  The user's points and profile are updated.
-
-By following these instructions, you should be able to generate a functional and innovative platform that effectively gamifies the process of learning Low-Level Design.
