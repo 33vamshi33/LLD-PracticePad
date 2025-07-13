@@ -14,7 +14,7 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({ onSubmit, initialData }) 
 
   useEffect(() => {
     if (excalidrawAPI && initialData) {
-      excalidrawAPI.updateScene({ elements: initialData });
+      excalidrawAPI.updateScene({ elements: structuredClone(initialData) });
     }
   }, [excalidrawAPI, initialData]);
 
@@ -68,7 +68,7 @@ const DiagramEditor: React.FC<DiagramEditorProps> = ({ onSubmit, initialData }) 
         <Excalidraw
           excalidrawAPI={(api) => setExcalidrawAPI(api)}
           theme="light"
-          initialData={initialData ? { elements: initialData } : null}
+          initialData={initialData ? { elements: structuredClone(initialData) } : null}
           UIOptions={{
             canvasActions: {
               saveToActiveFile: false,
